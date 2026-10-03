@@ -149,21 +149,43 @@ export class Game {
   async _loadAssets() {
     const loader = new GLTFLoader();
     const inlined = (typeof window !== 'undefined' && window.MANNEQUIN_ASSETS) || {};
-    const parse = (url) => new Promise((resolve, reject) => {
+
+    /** data:URI → ArrayBuffer, decoded locally so nothing has to be fetched. */
+    const decode = (uri) => {
+      const comma = uri.indexOf(',');
+      const meta = uri.slice(5, comma);
+      const payload = uri.slice(comma + 1);
+      if (!/;base64/i.test(meta)) {
+        const text = decodeURIComponent(payload);
+        const bytes = new Uint8Array(text.length);
+        for (let i = 0; i < text.length; i++) bytes[i] = text.charCodeAt(i) & 0xFF;
+        return bytes.buffer;
+      }
+      const bin = atob(payload);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes.buffer;
+    };
+    const parseData = (uri) => new Promise((resolve, reject) => {
+      try { loader.parse(decode(uri), '', resolve, reject); }
+      catch (e) { reject(e); }
+    });
+    const parseUrl = (url) => new Promise((resolve, reject) => {
       loader.load(url, resolve, undefined, (e) => reject(e || new Error(`could not load ${url}`)));
     });
-    /** inline data URI first (if the build provided one), then the loose file. */
+
+    /** embedded model first (the shipped build), then the loose .glb file. */
     const load = async (name) => {
-      const primary = inlined[name];
+      const embedded = inlined[name];
       const fallback = Game.FILES[name];
-      if (typeof primary === 'string' && primary && primary.indexOf('{GLB:') !== 0) {
-        try { return await parse(primary); }
+      if (typeof embedded === 'string' && embedded.startsWith('data:')) {
+        try { return await parseData(embedded); }
         catch (e) {
           if (!fallback) throw e;
-          console.warn(`[assets] inlined ${name} failed, trying ${fallback}`, e);
+          console.warn(`[assets] embedded ${name} failed, trying ${fallback}`, e);
         }
       }
-      return parse(fallback);
+      return parseUrl(fallback);
     };
     const [mannequin, walk, run, jump] = await Promise.all(
       ['mannequin', 'walk', 'run', 'jump'].map(load));
