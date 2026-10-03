@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Mannequin Playground — download the APK</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 20px 60px;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(120% 120% at 12% 0%, #1d2a55 0%, #0b1020 55%, #05070f 100%);
+    color: #e8edff; min-height: 100vh;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 34px; line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.5px; }
+  h1 span { display: block; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; color: #8fa3ff; margin-bottom: 10px; }
+  p.lead { color: #b9c3e6; margin-top: 0; }
+  a.dl {
+    display: block; margin: 28px 0 10px; padding: 20px 24px; text-align: center;
+    font-size: 19px; font-weight: 700; color: #08101f; text-decoration: none;
+    background: linear-gradient(180deg, #9be7ff, #59b6ff); border-radius: 16px;
+    box-shadow: 0 12px 30px -12px #59b6ff;
+  }
+  a.dl small { display: block; font-weight: 500; font-size: 13px; color: #12304d; margin-top: 4px; }
+  h2 { font-size: 18px; margin: 34px 0 8px; }
+  ol, ul { padding-left: 22px; color: #cdd6f5; }
+  li { margin: 6px 0; }
+  code { background: #1a2244; padding: 1px 6px; border-radius: 6px; font-size: 13px; }
+  .card { background: #121a33cc; border: 1px solid #26325c; border-radius: 16px; padding: 18px 22px; margin-top: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td { padding: 6px 0; border-bottom: 1px solid #222d52; color: #cdd6f5; }
+  td:first-child { color: #8fa3ff; width: 42%; }
+  footer { margin-top: 40px; color: #6b77a3; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span>Android APK</span>Mannequin Playground</h1>
+  <p class="lead">A 3D playground with the mannequin from this repository, animated with the bundled
+  walk / run / jump clips and driven by on-screen touch controls.</p>
+
+  <a class="dl" href="MannequinPlayground.apk" download>Download the APK
+    <small>MannequinPlayground.apk · version 1.0 · 0.85 MB · Android 5.0+</small></a>
+
+  <div class="card">
+    <h2>Install</h2>
+    <ol>
+      <li>Tap <b>Download the APK</b> above (do this on the phone, not on a computer).</li>
+      <li>Open the downloaded file from your notifications or the Files app.</li>
+      <li>Android asks you to allow installing unknown apps for the browser or Files app —
+          allow it, then tap <b>Install</b>. The APK is self-signed with a throw-away
+          certificate (like a debug build), so Play Protect may offer to scan it first.</li>
+      <li>Launch <b>Mannequin Playground</b>. It is landscape, so hold the phone sideways.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Controls</h2>
+    <table>
+      <tr><td>Joystick</td><td>Walk — push to the edge to run (or use the RUN button)</td></tr>
+      <tr><td>JUMP</td><td>Jump; hold for a slightly higher hop</td></tr>
+      <tr><td>Drag the world</td><td>Look around</td></tr>
+      <tr><td>⚙ gear</td><td>Joystick / jump-button size, opacity and placement, plus quality, sound and haptics</td></tr>
+    </table>
+    <p>Tap <b>Move controls</b> in the settings panel, then drag the joystick and the jump button
+    wherever your thumbs rest — the layout is saved. Everything else (quality preset, day/night,
+    shadows, run style, handedness) is in the same panel.</p>
+  </div>
+
+  <div class="card">
+    <h2>What is inside</h2>
+    <ul>
+      <li>8-ring course around the park with a timer and a best-run record.</li>
+      <li>Playground balls you can grab and throw, seesaw, carousel, slides, trees and benches.</li>
+      <li>No network access at runtime — the page, the mannequin and all three motion clips are
+          embedded in the APK.</li>
+    </ul>
+  </div>
+
+  <footer>Built from <code>game/</code> with <code>python3 tools/apk_build.py</code> ·
+  verified with <code>python3 tools/apk_verify.py</code></footer>
+</div>
+</body>
+</html>
