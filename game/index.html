@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b1020">
+<title>Mannequin Playground</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="scene"></canvas>
+
+<!-- ------------------------------------------------------------- controls -->
+<div id="joy" class="ctl"><div id="knob"></div></div>
+<div id="btnJump" class="ctl btn">JUMP</div>
+<div id="btnSprint" class="ctl btn small">RUN</div>
+
+<!-- ------------------------------------------------------------------ HUD -->
+<div id="hud">
+  <div class="chip" id="ringsChip">Rings <b id="rings">0</b>/8</div>
+  <div class="chip" id="clock">14:00</div>
+  <div class="chip warn" id="fps">–</div>
+  <div class="chip" id="toast"></div>
+</div>
+<button id="btnGear" aria-label="Settings">⚙</button>
+
+<!-- --------------------------------------------------------- edit layout -->
+<div id="editbar" class="glass">
+  <p>Drag the joystick and the JUMP button where your thumbs rest.</p>
+  <div class="grid2">
+    <div class="row">
+      <label>Joystick size <b data-v="joySize"></b></label>
+      <input type="range" data-k="joySize" min="96" max="260" step="2">
+    </div>
+    <div class="row">
+      <label>Jump size <b data-v="btnSize"></b></label>
+      <input type="range" data-k="btnSize" min="64" max="200" step="2">
+    </div>
+  </div>
+  <div class="btns">
+    <button id="btnResetLayout2">Reset</button>
+    <button id="btnEditDone" class="primary">Done</button>
+  </div>
+</div>
+
+<!-- ------------------------------------------------------------ settings -->
+<div id="panel" class="glass hidden">
+  <div class="panelHead">
+    <h1>Mannequin Playground</h1>
+    <button id="btnPanelClose" class="icon">✕</button>
+  </div>
+
+  <h2>Touch controls</h2>
+  <div class="row">
+    <label>Joystick size <b data-v="joySize"></b></label>
+    <input type="range" data-k="joySize" min="96" max="260" step="2">
+  </div>
+  <div class="row">
+    <label>Jump button size <b data-v="btnSize"></b></label>
+    <input type="range" data-k="btnSize" min="64" max="200" step="2">
+  </div>
+  <div class="row">
+    <label>Opacity <b data-v="opacity"></b></label>
+    <input type="range" data-k="opacity" min="25" max="100" step="5">
+  </div>
+  <div class="btns">
+    <button id="btnEdit">Move controls</button>
+    <button id="btnHanded">Stick: left</button>
+  </div>
+  <div class="btns">
+    <button id="btnSprintMode">Run: joystick</button>
+    <button id="btnReset">Reset layout</button>
+  </div>
+
+  <h2>Camera</h2>
+  <div class="row">
+    <label>Distance <b data-v="camDist"></b></label>
+    <input type="range" data-k="camDist" min="2.6" max="10" step="0.1">
+  </div>
+  <div class="row">
+    <label>Sensitivity <b data-v="camSens"></b></label>
+    <input type="range" data-k="camSens" min="0.3" max="2.5" step="0.05">
+  </div>
+  <div class="btns">
+    <button id="btnAutoAlign" class="tg on">Auto follow</button>
+    <button id="btnInvertY" class="tg">Invert Y</button>
+  </div>
+
+  <h2>World</h2>
+  <div class="row">
+    <label>Time of day <b id="timeVal">14:00</b></label>
+    <input type="range" id="timeSlider" min="0" max="24" step="0.05" value="14">
+  </div>
+  <div class="row">
+    <label>Sun height <b>☀</b></label>
+    <input type="range" id="sunSlider" min="0" max="1" step="0.01" value="0.62">
+  </div>
+  <div class="btns tight">
+    <button data-time="13.2">Noon</button>
+    <button data-time="18.6">Dusk</button>
+    <button data-time="23.2">Night</button>
+  </div>
+  <div class="btns">
+    <button id="btnDayCycle" class="tg">Day cycle</button>
+    <button id="btnShadows" class="tg on">Shadows</button>
+  </div>
+  <div class="btns">
+    <button id="btnBalls">Drop balls</button>
+    <button id="btnCheer">Dance</button>
+  </div>
+
+  <h2>Performance &amp; sound</h2>
+  <div class="btns">
+    <button id="btnQuality" class="primary">Auto</button>
+    <button id="btnFullscreen">Fullscreen</button>
+  </div>
+  <div class="btns">
+    <button id="btnSfx" class="tg on">Sound</button>
+    <button id="btnHaptics" class="tg on">Vibration</button>
+    <button id="btnFps" class="tg">FPS</button>
+  </div>
+  <p class="hint">
+    Quality &amp; resolution adapt automatically to keep the frame rate smooth.
+    Drag anywhere on the world to look around.
+  </p>
+</div>
+
+<!-- -------------------------------------------------------------- result -->
+<div id="result" class="glass">
+  <h1>Course complete!</h1>
+  <p><b id="resultRings">8</b> rings — <span id="resultBest"></span></p>
+</div>
+
+<!-- -------------------------------------------------------------- loader -->
+<div id="loader">
+  <div class="logo">Mannequin<br><span>Playground</span></div>
+  <div class="track"><div id="loadBar"></div></div>
+  <div id="loadText">Loading…</div>
+</div>
+
+<script>
+  /* Asset locations. `node build.mjs --inline` (the build that goes into the
+     APK) swaps these placeholders for base64 data URIs, so the packaged game
+     never has to fetch a file:// URL; the sibling .glb files stay in the APK
+     as a fallback for WebViews that block data: requests. */
+  window.MANNEQUIN_ASSETS = {
+    mannequin: '{GLB:mannequin}',
+    walk: '{GLB:walk}',
+    run: '{GLB:run}',
+    jump: '{GLB:jump}'
+  };
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+/* ============================================================
+   Mannequin Playground — mobile UI
+   ============================================================ */
+:root{
+  --glass: rgba(14,19,38,.72);
+  --line: rgba(255,255,255,.16);
+  --accent: #66a8ff;
+  --accent2: #ffb347;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b1020;color:#eaf2ff;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  touch-action:none;overscroll-behavior:none}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+
+/* ---------------------------------------------------------- controls */
+.ctl{position:fixed;z-index:10;touch-action:none;will-change:transform,opacity;transition:opacity .2s}
+#joy{border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.11),rgba(255,255,255,.04));
+  border:2px solid rgba(255,255,255,.38);box-shadow:0 6px 24px rgba(0,0,0,.3) inset}
+#joy.active{border-color:rgba(120,190,255,.85)}
+#knob{position:absolute;left:26%;top:26%;width:48%;height:48%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.92),rgba(180,210,255,.7));
+  border:2px solid rgba(255,255,255,.9);box-shadow:0 4px 14px rgba(0,0,0,.4);pointer-events:none}
+.btn{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;
+  letter-spacing:.5px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+#btnJump{background:radial-gradient(circle at 35% 30%,rgba(255,190,110,.75),rgba(255,140,40,.5));
+  border:2px solid rgba(255,214,150,.95);box-shadow:0 6px 20px rgba(255,150,40,.28)}
+#btnSprint{background:rgba(90,210,150,.34);border:2px solid rgba(150,255,200,.8);display:none}
+body.sprint-button #btnSprint{display:flex}
+.ctl.down{filter:brightness(1.45);transform:scale(.94)}
+
+/* edit mode */
+body.editing .ctl{outline:2px dashed #7ee0ff;outline-offset:6px;opacity:1!important}
+body.editing #btnGear{display:none}
+body.editing #panel{display:none}
+
+/* --------------------------------------------------------------- HUD */
+#hud{position:fixed;z-index:15;top:calc(8px + var(--safe-t));left:calc(10px + var(--safe-l));
+  display:flex;gap:8px;align-items:center;pointer-events:none;flex-wrap:wrap;max-width:60vw}
+.chip{background:rgba(10,15,30,.55);border:1px solid var(--line);border-radius:999px;
+  padding:6px 12px;font-size:12.5px;font-weight:600;letter-spacing:.3px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.chip b{color:var(--accent2)}
+.chip.warn{color:#9fe8b0;font-variant-numeric:tabular-nums;display:none}
+#toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(58px + var(--safe-t));
+  opacity:0;transition:opacity .3s;background:rgba(10,15,30,.8);padding:8px 16px;border-radius:999px;
+  font-size:13px;pointer-events:none;z-index:16;white-space:nowrap}
+#toast.show{opacity:1}
+#clock{display:block}
+
+#btnGear{position:fixed;z-index:20;top:calc(10px + var(--safe-t));right:calc(12px + var(--safe-r));
+  width:48px;height:48px;border-radius:15px;border:1px solid var(--line);
+  background:rgba(14,19,38,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  color:#fff;font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center}
+
+/* ------------------------------------------------------------ panels */
+.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid var(--line);box-shadow:0 22px 54px rgba(0,0,0,.5)}
+#panel{position:fixed;z-index:30;top:0;right:0;bottom:0;width:min(340px,90vw);
+  padding:14px 16px calc(22px + var(--safe-b));overflow-y:auto;touch-action:pan-y;
+  border-radius:22px 0 0 22px;transition:transform .35s cubic-bezier(.22,1,.36,1)}
+#panel.hidden{transform:translateX(110%);pointer-events:none}
+.panelHead{display:flex;align-items:center;justify-content:space-between}
+#panel h1{font-size:17px;font-weight:800;
+  background:linear-gradient(92deg,#ffd36e,#ff7a7a 45%,#7ee0ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+#panel h2{font-size:11px;font-weight:700;opacity:.6;margin:16px 0 8px;letter-spacing:1px;text-transform:uppercase}
+.row{margin-bottom:10px}
+.row label{display:flex;justify-content:space-between;font-size:12px;opacity:.88;margin-bottom:6px}
+.row b{color:#ffd98a;font-weight:700}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:8px;
+  background:linear-gradient(90deg,#4d7dff,#9a6bff);outline:none;touch-action:pan-y}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:#fff;border:3px solid #5b7dff;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid #5b7dff}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.btns.tight{gap:6px}
+button{flex:1 1 auto;min-width:70px;padding:11px 10px;font:700 12.5px system-ui,sans-serif;color:#eaf2ff;
+  background:rgba(255,255,255,.09);border:1px solid var(--line);border-radius:12px;transition:transform .08s,background .15s}
+button:active{transform:scale(.97);background:rgba(120,160,255,.3)}
+button.primary{background:linear-gradient(135deg,#5b7dff,#9a6bff);border-color:transparent}
+button.tg.on{background:linear-gradient(135deg,#3aa76d,#63c98c);border-color:transparent;color:#06120a}
+button.icon{flex:0 0 auto;min-width:0;width:34px;padding:6px;font-size:14px}
+.hint{font-size:11px;opacity:.55;line-height:1.5;margin-top:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+
+/* ---------------------------------------------------------- edit bar */
+#editbar{position:fixed;z-index:30;left:50%;transform:translateX(-50%);
+  top:calc(10px + var(--safe-t));width:min(540px,94vw);padding:12px 14px;border-radius:18px;display:none}
+body.editing #editbar{display:block}
+#editbar p{font-size:12px;opacity:.85;margin-bottom:10px;text-align:center}
+
+/* ----------------------------------------------------------- result */
+#result{position:fixed;z-index:32;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);
+  padding:22px 28px;border-radius:22px;text-align:center;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s}
+#result.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#result h1{font-size:19px;margin-bottom:8px;
+  background:linear-gradient(92deg,#ffd36e,#7ee0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+#result p{font-size:13px;opacity:.9}
+#result b{color:#ffd98a;font-size:17px}
+
+/* ----------------------------------------------------------- loader */
+#loader{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:18px;text-align:center;padding:24px;
+  background:radial-gradient(circle at 50% 38%,#1c2a5c,#070a18 72%);transition:opacity .6s,visibility .6s}
+#loader.done{opacity:0;visibility:hidden}
+.logo{font-size:26px;font-weight:800;letter-spacing:.5px;line-height:1.15;
+  background:linear-gradient(96deg,#ffd36e,#ff7a7a 45%,#7ee0ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.logo span{font-size:19px;letter-spacing:3px;opacity:.9}
+.track{width:min(240px,60vw);height:6px;border-radius:99px;background:rgba(255,255,255,.13);overflow:hidden}
+#loadBar{height:100%;width:2%;border-radius:99px;background:linear-gradient(90deg,#6ee0ff,#ffb347);transition:width .3s}
+#loadText{font-size:12.5px;letter-spacing:.4px;opacity:.7}
+
+/* landscape tuning: keep the panel usable on short screens */
+@media (max-height:420px){
+  #panel{width:min(420px,92vw);padding-top:10px}
+  #panel h2{margin:10px 0 6px}
+  .logo{font-size:20px}.logo span{font-size:15px}
+}
