@@ -125,3 +125,24 @@ body.editing #editbar{display:block}
   #panel h2{margin:10px 0 6px}
   .logo{font-size:20px}.logo span{font-size:15px}
 }
+
+/* ------------------------------------------------------- keyboard (desktop) */
+#keys{
+  position:fixed;left:14px;bottom:14px;z-index:8;display:none;
+  padding:10px 14px;border-radius:14px;font-size:12px;line-height:1.9;color:#cdd6f5;
+  pointer-events:none;
+}
+#keys b{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8fa3ff;margin-bottom:2px}
+#keys span{display:block;opacity:.85}
+#keys kbd{
+  display:inline-block;min-width:20px;padding:1px 6px;margin-right:4px;text-align:center;
+  font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:#eaf1ff;
+  background:#1b2546;border:1px solid #33406e;border-bottom-width:2px;border-radius:6px;
+}
+/* only where a real pointer/keyboard is likely; the touch UI stays untouched */
+@media (pointer:fine) and (min-width:720px){
+  #keys{display:block}
+}
+@media (max-height:420px){
+  #keys{display:none}
+}
